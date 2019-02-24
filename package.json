@@ -1,0 +1,28 @@
+{
+  "name": "kuna_db",
+  "version": "1.0.0",
+  "description": "kuna db project",
+  "main": "src/app.js",
+  "scripts": {
+    "test": "mocha || true",
+    "start": "nodemon src/app.js",
+    "start-server": "node src/app.js"
+  },
+  "author": "midmihua",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "cron": "^1.6.0",
+    "dotenv-extended": "^2.3.0",
+    "express": "^4.16.4",
+    "express-basic-auth": "^1.1.6",
+    "mongoose": "^5.4.15",
+    "request": "^2.88.0",
+    "request-promise-native": "^1.0.7"
+  },
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "mocha": "^6.0.1",
+    "nodemon": "^1.18.10"
+  }
+}
