@@ -2,10 +2,14 @@ require('dotenv-extended').load();
 const express = require('express');
 const bodyParser = require('body-parser');
 const basicAuth = require('express-basic-auth');
-const { jobHistorySlice } = require('./utils/cron');
+const actuator = require('express-actuator');
+const { jobHistorySlice, jobHistoryClear } = require('./utils/cron');
 
 // Init new application
 const app = express();
+
+// Setup actuator config
+app.use(actuator('/health'));
 
 // Setup mongodb connection
 require('./utils/mongo');
@@ -40,8 +44,10 @@ const stopHandler = () => {
     });
 };
 
-// Run history job
+// History job (get and save new hist data)
 jobHistorySlice.start();
+// History job (clear old hist data)
+jobHistoryClear.start();
 
 process.on('SIGTERM', stopHandler);
 process.on('SIGINT', stopHandler);
