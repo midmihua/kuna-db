@@ -1,4 +1,3 @@
-
 /**
  * Date formatting
  * 
@@ -9,6 +8,17 @@ function getUnixDate(days) {
     return Math.round(new Date().setDate((new Date).getDate() + days) / 1000);
 }
 
+/**
+ * Date formatting
+ * 
+ * @param {number} unixtime - Unix time value 
+ */
+function convertUnixTimeToHumanDate(unixtime) {
+    unixtime = typeof unixtime === 'number' ? unixtime : 0;
+    return new Date(unixtime * 1000).toUTCString();
+}
+
 module.exports = {
-    getUnixDate
+    getUnixDate,
+    convertUnixTimeToHumanDate
 }

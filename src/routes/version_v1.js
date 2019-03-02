@@ -1,38 +1,40 @@
 const express = require('express');
 const router = express.Router();
-const db = require('../models/kunaModel');
+const { fetchAllData } = require('./fetch')
+const { getHistMetrics, } = require('../boundary/prepare_data');
+const { getSpecificIntervalHist } = require('../boundary/prepare_data');
+const { getIntervalNumber } = require('../boundary/prepare_data');
 
-// Get history data
+// Get history data - full scope
 router.get('/hist', (req, res, next) => {
-    if (JSON.stringify(req.query) === '{}') {
-        db.find().then((records) => {
-            if (records === null || records === undefined)
-                res.send({ result: 'Requested data was not found' });
-            else
-                res.status(200).send(records);
-        }).catch(next);
+    fetchAllData(req, next)
+        .then(data => {
+            res.status(data.status).send(data.response);
+        })
+        .catch(next);
+});
+
+// Get history data on interval
+router.get('/hist/:interval', (req, res, next) => {
+    if (!getIntervalNumber(req.params.interval)) {
+        res.status(200).send({ "Warning": "Wrong interval value is provided" });
     }
     else {
-        db.find(dynamicQuery(req.query)).then((records) => {
-            if (records === null || records === undefined || records.length == 0)
-                res.send({ result: 'Requested data was not found' });
-            else
-                res.status(200).send(records);
-        }).catch(next);
+        fetchAllData(req, next)
+            .then(data => {
+                res.status(data.status).send(getSpecificIntervalHist(data.response, req.params.interval));
+            })
+            .catch(next);
     }
 });
 
-function dynamicQuery(data) {
-    let query = {};
-    Object.keys(data).forEach(function (key) {
-        if (key.toLocaleLowerCase() === 'coin')
-            query['coin'] = data[key];
-        else if (key.toLocaleLowerCase() === 'id')
-            query['_id'] = { $in: data[key] };
-        else if (key.toLocaleLowerCase() === 'desc')
-            query['desc'] = { $regex: '.*' + data[key] + '.*' };
-    });
-    return query;
-}
+// Get hist data - metrics
+router.get('/metrics', (req, res, next) => {
+    fetchAllData(req, next)
+        .then(data => {
+            res.status(data.status).send(getHistMetrics(data.response));
+        })
+        .catch(next);
+});
 
 module.exports = router;
